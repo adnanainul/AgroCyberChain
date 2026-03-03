@@ -7,6 +7,35 @@ const MLPrediction = require('../models/MLPrediction');
 const ActionLog = require('../models/ActionLog');
 const Product = require('../models/Product');
 const Order = require('../models/Order');
+const { predictCrop } = require('../services/mlService'); // Real KNN ML engine
+const { getAllPrices, refreshAllPrices } = require('../services/priceService'); // Live market prices
+
+// ============================================================
+// GET /prices — Returns live crop market prices (AGMARKNET / MSP 2024-25)
+// ============================================================
+router.get('/prices', async (req, res) => {
+    try {
+        const priceData = await getAllPrices();
+        res.json({
+            success: true,
+            ...priceData,
+            note: 'Prices from data.gov.in AGMARKNET (live mandi) or MSP 2024-25 fallback'
+        });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
+// POST /prices/refresh — Force refresh the price cache
+router.post('/prices/refresh', async (req, res) => {
+    try {
+        await refreshAllPrices();
+        const priceData = await getAllPrices();
+        res.json({ success: true, message: 'Price cache refreshed', ...priceData });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
 
 // Get Latest Sensor Data
 router.get('/sensors/latest', async (req, res) => {
@@ -354,183 +383,144 @@ router.post('/seed', async (req, res) => {
     }
 });
 
-// POST /sensors - Simulate receiving data from IoT devices
-router.post('/sensors', async (req, res) => {
-    try {
-        const { moisture, ph, temperature, humidity } = req.body;
+// ============================================================
+// SHARED: Core sensor processing pipeline (used by both routes)
+// ============================================================
+async function processSensorData(moisture, ph, temperature, humidity, io) {
+    // 1. Save Sensor Data with SHA-256 hash
+    const dataString = `${moisture}-${ph}-${temperature}-${humidity}-${Date.now()}`;
+    const hash = require('crypto').createHash('sha256').update(dataString).digest('hex');
 
-        // 1. Save Sensor Data
-        const dataString = `${moisture}-${ph}-${temperature}-${humidity}-${Date.now()}`;
-        const hash = require('crypto').createHash('sha256').update(dataString).digest('hex');
+    const newSensor = await SensorData.create({ moisture, ph, temperature, humidity, sha256_hash: hash });
 
-        const newSensor = await SensorData.create({
-            moisture,
-            ph,
-            temperature,
-            humidity,
-            sha256_hash: hash
+    if (io) io.emit('sensor_update', newSensor);
+    if (io) io.emit('iot-data-update', { moisture, ph, temperature, humidity }); // For MLModels live form
+
+    // 2. ✅ REAL ML PREDICTION using KNN + Kaggle Dataset
+    console.log(`[ML Engine] Running KNN prediction for: pH=${ph}, Temp=${temperature}°C, Humidity=${humidity}%, Moisture=${moisture}%`);
+    // predictCrop is async because it fetches live prices; await its result
+    const mlResult = await predictCrop({ ph, temperature, humidity, moisture });
+    console.log(`[ML Engine] Top prediction: ${mlResult.recommended_crop} (${mlResult.crop_confidence}% confidence)`);
+    console.log(`[ML Engine] Algorithm: ${mlResult.ml_metadata?.algorithm}`);
+
+    // 3. Save Prediction to DB
+    const newPrediction = await MLPrediction.create({
+        recommended_crop: mlResult.recommended_crop,
+        crop_confidence: mlResult.crop_confidence,
+        irrigation_time: mlResult.irrigation_time,
+        irrigation_confidence: mlResult.irrigation_confidence,
+        soil_health: mlResult.soil_health,
+        soil_confidence: mlResult.soil_confidence,
+        predicted_yield: mlResult.predicted_yield,
+        all_recommendations: mlResult.all_recommendations
+    });
+
+    if (io) {
+        io.emit('prediction_update', {
+            ...newPrediction.toObject(),
+            all_recommendations: mlResult.all_recommendations,
+            ml_metadata: mlResult.ml_metadata,
+            model_used: mlResult.ml_metadata.algorithm
         });
 
-        // ⚡ REAL-TIME EMIT: Update Dashboard immediately
-        if (req.io) {
-            req.io.emit('sensor_update', newSensor);
-        }
-
-        // 2. Run "ML" Logic (XGBoost / LSTM Simulation)
-        // Define Crop Database for Profit Calc (Price per ton, Cost per acre)
-        const CROP_DB = {
-            "Wheat": { price: 22000, cost: 15000, duration: "120 Days" },
-            "Rice": { price: 35000, cost: 22000, duration: "150 Days" },
-            "Corn": { price: 18000, cost: 12000, duration: "100 Days" },
-            "Sugarcane": { price: 3000, cost: 40000, duration: "365 Days" }, // Price per ton low but high yield
-            "Cotton": { price: 60000, cost: 25000, duration: "160 Days" }
-        };
-
-        // Determine "Suitable" crops based on conditions
-        // Logic: Temp > 30 -> Heat lovers (Corn, Cotton). Temp < 25 -> Wheat. Humidity > 60 -> Rice.
-        let candidates = [];
-
-        if (temperature > 28) {
-            candidates.push("Cotton", "Corn", "Sugarcane");
-        } else if (temperature < 25) {
-            candidates.push("Wheat", "Corn"); // Corn is adaptable
-        } else {
-            // Temperate
-            candidates.push("Rice", "Areca Nut", "Soybean");
-        }
-
-        // Ensure we have at least 3
-        if (candidates.length < 3) candidates.push("Tomato", "Potato");
-
-        // Calculate Metrics for top 3
-        const recommendations = candidates.slice(0, 3).map(crop => {
-            const dbRef = CROP_DB[crop] || { price: 20000, cost: 15000, duration: "N/A" };
-
-            // XGBoost Regressor for Yield (Randomized slightly around realistic means)
-            // Wheat ~ 2-5 tons, Rice ~ 3-6 tons, Sugarcane ~ 30-50 tons
-            const baseYield = crop === 'Sugarcane' ? 40 : 4;
-            const predicted_yield = parseFloat((baseYield + (Math.random() * 2 - 1)).toFixed(2));
-
-            // Profit = (Yield * Price) - Cost
-            const gross_income = predicted_yield * dbRef.price;
-            const net_profit = Math.floor(gross_income - dbRef.cost);
-
-            return {
-                crop,
-                confidence: Math.floor(Math.random() * (99 - 85) + 85),
-                yield: predicted_yield,
-                cost: dbRef.cost,          // Added Cost
-                price: dbRef.price,        // Added Price per Ton
-                net_profit,
-                duration: dbRef.duration
-            };
-        });
-
-        // Use the Best Profit one as the "Primary" recommendation
-        recommendations.sort((a, b) => b.net_profit - a.net_profit);
-        const topPick = recommendations[0];
-
-        let irrigation_time = "Not Needed";
-        let irrigation_confidence = 90;
-        let soil_health = "Optimal";
-
-        // Simple Logic Rules (Simulating ML Decision Boundary)
-        if (moisture < 30) {
-            irrigation_time = "IMMEDIATE ACTION REQUIRED";
-            irrigation_confidence = 99; // High confidence from "Random Forest"
-            soil_health = "Critical: Dry";
-        } else if (moisture > 80) {
-            soil_health = "Risk of Root Rot (Detected by Isolation Forest)";
-            irrigation_time = "Stop Irrigation";
-        }
-
-        // Save Prediction
-        const newPrediction = await MLPrediction.create({
-            recommended_crop: topPick.crop,
-            crop_confidence: topPick.confidence,
-            irrigation_time,
-            irrigation_confidence,
-            soil_health,
-            soil_confidence: 88,
-            predicted_yield: topPick.yield,
-            // Store extra details in valid schema fields or implicit
-            // Note: If schema doesn't support array, we only save top pick, 
-            // but we EMIT the full array for UI.
-            all_recommendations: recommendations // Schema must match this structure
-        });
-
-        if (req.io) {
-            req.io.emit('prediction_update', {
-                ...newPrediction.toObject(),
-                all_recommendations: recommendations, // Send FULL ARRAY to UI
-                model_used: "XGBoost + LSTM Ensemble"
+        // Emit critical alert if soil is in danger
+        if (mlResult.ml_metadata.irrigation_urgency === 'critical') {
+            io.emit('alert:critical', {
+                message: `⚠️ CRITICAL: Soil moisture is ${moisture.toFixed(1)}% — Irrigate immediately to prevent crop stress!`
             });
         }
+    }
 
-        // 3. Create Blockchain Record
-        const lastBlock = await BlockchainRecord.findOne().sort({ block_number: -1 });
-        const blockNum = lastBlock ? lastBlock.block_number + 1 : 1000;
-        const prevHash = lastBlock ? lastBlock.current_hash : "00000000000000000000000000000000";
-        const blockData = `${blockNum}-${prevHash}-SensorAnalysis-${newSensor._id}`;
-        const blockHash = require('crypto').createHash('sha256').update(blockData).digest('hex');
+    // 4. Create Blockchain Record for this reading
+    const lastBlock = await BlockchainRecord.findOne().sort({ block_number: -1 });
+    const blockNum = lastBlock ? lastBlock.block_number + 1 : 1000;
+    const prevHash = lastBlock ? lastBlock.current_hash : '0000000000000000000000000000000000000000000000000000000000000000';
+    const blockData = `${blockNum}-${prevHash}-SensorAnalysis-${newSensor._id}`;
+    const blockHash = require('crypto').createHash('sha256').update(blockData).digest('hex');
 
-        const newBlock = await BlockchainRecord.create({
-            block_number: blockNum,
-            previous_hash: prevHash,
-            current_hash: blockHash,
-            data_type: "Sensor & ML Analysis",
+    const newBlock = await BlockchainRecord.create({
+        block_number: blockNum,
+        previous_hash: prevHash,
+        current_hash: blockHash,
+        data_type: 'Sensor & ML Analysis',
+        verified: true
+    });
+
+    if (io) io.emit('block_mined', newBlock);
+
+    // 5. Auto-action if critically dry
+    if (moisture < 20) {
+        const newAction = await ActionLog.create({
+            action_type: 'EMERGENCY IRRIGATION',
+            details: `Auto-Triggered: Moisture Critical (${moisture.toFixed(1)}%). KNN predicted ${mlResult.recommended_crop} needs immediate water.`,
+            status: 'COMPLETED',
+            user_id: 'SYSTEM_AUTO_BOT'
+        });
+
+        const actionBlockNum = blockNum + 1;
+        const actionBlockData = `${actionBlockNum}-${blockHash}-ACTION-${newAction._id}`;
+        const actionBlockHash = require('crypto').createHash('sha256').update(actionBlockData).digest('hex');
+        const actionBlock = await BlockchainRecord.create({
+            block_number: actionBlockNum,
+            previous_hash: blockHash,
+            current_hash: actionBlockHash,
+            data_type: 'Auto-Action: Emergency Irrigation',
             verified: true
         });
 
-        if (req.io) {
-            req.io.emit('block_mined', newBlock);
+        if (io) {
+            io.emit('new_alert', { type: 'success', message: `Auto-Irrigated: Moisture was ${moisture.toFixed(1)}%`, action: newAction });
+            io.emit('block_mined', actionBlock);
         }
+    }
 
-        // 4. AUTOMATED ACTUATOR PIPELINE
-        // If moisture is critical (< 30), trigger auto-irrigation
-        if (moisture < 30) {
-            const actionDetails = `Auto-Triggered: Moisture Low (${moisture}%)`;
-            const newAction = await ActionLog.create({
-                action_type: "EMERGENCY IRRIGATION",
-                details: actionDetails,
-                status: 'COMPLETED',
-                user_id: "SYSTEM_AUTO_BOT"
-            });
+    return { sensor: newSensor, prediction: newPrediction, block: newBlock, mlResult };
+}
 
-            // Log Action to Blockchain
-            const actionBlockNum = blockNum + 1;
-            const actionBlockData = `${actionBlockNum}-${blockHash}-ACTION-${newAction._id}`;
-            const actionBlockHash = require('crypto').createHash('sha256').update(actionBlockData).digest('hex');
-
-            const actionBlock = await BlockchainRecord.create({
-                block_number: actionBlockNum,
-                previous_hash: blockHash,
-                current_hash: actionBlockHash,
-                data_type: "Auto-Action: Irrigation",
-                verified: true
-            });
-
-            // Emit Alert
-            if (req.io) {
-                req.io.emit('new_alert', {
-                    type: 'success',
-                    message: `System Auto-Irrigated: Moisture Corrected from ${moisture}%`,
-                    action: newAction
-                });
-                req.io.emit('block_mined', actionBlock);
-            }
-        }
-
+// POST /sensors - Dashboard simulate button / Frontend API call
+router.post('/sensors', async (req, res) => {
+    try {
+        const { moisture, ph, temperature, humidity } = req.body;
+        const result = await processSensorData(moisture, ph, temperature, humidity, req.io);
         res.json({
-            message: "Data Processed Successfully",
-            sensor: newSensor,
-            prediction: newPrediction,
-            block: newBlock
+            message: 'Data Processed via Real KNN ML Engine',
+            sensor: result.sensor,
+            prediction: {
+                ...result.prediction.toObject(),
+                all_recommendations: result.mlResult.all_recommendations,
+                ml_metadata: result.mlResult.ml_metadata
+            },
+            block: result.block
         });
-
     } catch (err) {
         console.error(err);
         res.status(500).json({ message: err.message });
+    }
+});
+
+// POST /iot/sensors - ESP32 hardware endpoint
+router.post('/iot/sensors', async (req, res) => {
+    try {
+        const { moisture, ph, temperature, humidity } = req.body;
+        console.log(`[ESP32] Data received: moisture=${moisture}%, ph=${ph}, temp=${temperature}°C, humidity=${humidity}%`);
+        const result = await processSensorData(
+            parseFloat(moisture) || 0,
+            parseFloat(ph) || 7.0,
+            parseFloat(temperature) || 25.0,
+            parseFloat(humidity) || 60.0,
+            req.io
+        );
+        res.json({
+            status: 'ok',
+            message: 'ESP32 data received and processed by KNN ML engine',
+            recommended_crop: result.mlResult.recommended_crop,
+            crop_confidence: result.mlResult.crop_confidence,
+            irrigation_time: result.mlResult.irrigation_time,
+            soil_health: result.mlResult.soil_health
+        });
+    } catch (err) {
+        console.error('[ESP32 Route Error]', err);
+        res.status(500).json({ status: 'error', message: err.message });
     }
 });
 

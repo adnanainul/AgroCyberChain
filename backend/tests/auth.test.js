@@ -112,4 +112,31 @@ describe('Auth API & Security', () => {
             expect(res.headers['x-frame-options']).toBeDefined();
         });
     });
+
+    // ------------------------------------------------------
+    // New: ensure ML prediction endpoint works correctly
+    // (regression test for previously-broken async call)
+    describe('POST /api/sensors', () => {
+        it('should accept sensor data and return a valid prediction', async () => {
+            const payload = {
+                moisture: 45,
+                ph: 6.5,
+                temperature: 25,
+                humidity: 60
+            };
+
+            const res = await request(app)
+                .post('/api/sensors')
+                .send(payload)
+                .set('Accept', 'application/json');
+
+            expect(res.statusCode).toEqual(200);
+            expect(res.body).toHaveProperty('prediction');
+            const pred = res.body.prediction;
+            expect(pred.recommended_crop).toBeDefined();
+            expect(pred.crop_confidence).toBeGreaterThanOrEqual(0);
+            // ensure the async ml engine was awaited by checking for an array
+            expect(Array.isArray(pred.all_recommendations)).toBe(true);
+        });
+    });
 });

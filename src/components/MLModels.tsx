@@ -157,9 +157,16 @@ const MLModels = () => {
     }, 2500);
   };
 
-  const handleSimulate = async (e: React.FormEvent) => {
+  const handleSimulate = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
+
+    if (!API_BASE) {
+      toast.error('API base URL is not configured. Set VITE_API_URL in your .env file.');
+      setLoading(false);
+      return;
+    }
+
     try {
       const res = await fetch(`${API_BASE}/api/sensors`, {
         method: 'POST',
@@ -171,12 +178,18 @@ const MLModels = () => {
           moisture: Number(formData.moisture)
         })
       });
+
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.message || 'Server responded with an error');
+      }
+
       const data = await res.json();
       setSimulationResult(data.prediction);
       setLatestPrediction(data.prediction); // Update latest
-    } catch (error) {
-      console.error("Simulation failed:", error);
-      alert("Simulation failed. Backend might be offline.");
+    } catch (error: any) {
+      console.error('Simulation failed:', error);
+      toast.error(`Prediction failed: ${error.message || 'network error'}`);
     } finally {
       setLoading(false);
     }
@@ -308,6 +321,7 @@ const MLModels = () => {
               </div>
 
               <button
+                type="submit" /* ensure form submission works across all browsers */
                 disabled={loading}
                 className="w-full py-4 bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-bold text-lg rounded-xl shadow-lg hover:shadow-emerald-500/30 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 flex items-center justify-center"
               >
