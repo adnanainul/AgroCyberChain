@@ -258,6 +258,33 @@ async function predictCrop({ ph, temperature, humidity, moisture }) {
 
     const topPick = top3[0];
 
+    // ============================================================
+    // HARVEST TIME PREDICTION
+    // Based on crop maturity period + current conditions
+    // ============================================================
+    const CROP_MATURITY = {
+        rice: 120, maize: 100, chickpea: 180, kidneybeans: 90, pigeonpeas: 200,
+        mothbeans: 80, mungbean: 75, blackgram: 90, lentil: 150, pomegranate: 200,
+        banana: 365, mango: 150, grapes: 180, watermelon: 80, muskmelon: 80,
+        apple: 180, orange: 365, papaya: 300, coconut: 365, cotton: 160,
+        jute: 160, coffee: 270, wheat: 140
+    };
+
+    const maturityDays = CROP_MATURITY[topPick.crop.toLowerCase()] || 120;
+    const harvestDate = new Date();
+    harvestDate.setDate(harvestDate.getDate() + maturityDays);
+    const harvestDateStr = harvestDate.toLocaleDateString('en-IN', { year: 'numeric', month: 'short', day: 'numeric' });
+
+    // Determine monitoring interval based on crop criticality
+    const monitoringInterval = moisture < 30 ? '1 week' : (humidity < 40 ? '1 week' : '2 weeks');
+    const nextMonitoringDate = new Date();
+    nextMonitoringDate.setDate(nextMonitoringDate.getDate() + (monitoringInterval === '1 week' ? 7 : 14));
+    const nextMonitoringStr = nextMonitoringDate.toLocaleDateString('en-IN', { year: 'numeric', month: 'short', day: 'numeric' });
+
+    // Disease risk assessment
+    const diseaseRisk = humidity > 80 ? 'High (wet conditions promote fungal diseases)' : 
+                       humidity > 65 ? 'Moderate (monitor for leaf diseases)' : 'Low (dry conditions)';
+
     return {
         recommended_crop: topPick.crop,
         crop_confidence: topPick.confidence,
@@ -266,6 +293,12 @@ async function predictCrop({ ph, temperature, humidity, moisture }) {
         soil_health: soilHealth,
         soil_confidence: soilHealthScore,
         predicted_yield: topPick.yield,
+        // NEW: Harvest & Monitoring
+        harvest_date: harvestDateStr,
+        maturity_days: maturityDays,
+        monitoring_interval: monitoringInterval,
+        next_monitoring_date: nextMonitoringStr,
+        disease_risk: diseaseRisk,
         all_recommendations: top3,
         ml_metadata: {
             algorithm: 'K-Nearest Neighbors (K=9) with Feature Normalization',
@@ -275,7 +308,8 @@ async function predictCrop({ ph, temperature, humidity, moisture }) {
             input_received: { ph, temperature, humidity, moisture },
             derived_values: { N, P, K, rainfall: parseFloat(rainfall.toFixed(1)) },
             irrigation_urgency: irrigationUrgency,
-            soil_health_score: soilHealthScore
+            soil_health_score: soilHealthScore,
+            disease_monitoring: { interval: monitoringInterval, next_check: nextMonitoringStr }
         }
     };
 }
