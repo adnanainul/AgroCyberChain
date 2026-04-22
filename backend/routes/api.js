@@ -182,7 +182,7 @@ router.post('/seed', async (req, res) => {
                 final_price: 3610,
                 stock_quantity: 250,
                 unit: "kg",
-                image_url: "https://images.unsplash.com/photo-1574943320219-553eb213f72d?w=400",
+                image_url: "https://cdn.pixabay.com/photo/2016/09/05/17/14/wheat-1647276_640.jpg",
                 rating: 4.7,
                 reviews_count: 234,
                 specifications: { "Variety": "DBW-17", "Yield": "50-55 quintals/hectare", "Germination": "92%", "Region": "North & Central India" }
@@ -197,7 +197,7 @@ router.post('/seed', async (req, res) => {
                 final_price: 2200,
                 stock_quantity: 180,
                 unit: "kg",
-                image_url: "https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400",
+                image_url: "https://cdn.pixabay.com/photo/2014/08/03/00/51/rice-field-409504_640.jpg",
                 rating: 4.8,
                 reviews_count: 156,
                 specifications: { "Variety": "Samba Masuri", "Yield": "50-55 quintals/hectare", "Grain Type": "Medium", "Growing Season": "120-135 days" }
@@ -212,7 +212,7 @@ router.post('/seed', async (req, res) => {
                 final_price: 765,
                 stock_quantity: 400,
                 unit: "kg",
-                image_url: "https://images.unsplash.com/photo-1551754655-cd27e38d2076?w=400",
+                image_url: "https://cdn.pixabay.com/photo/2017/09/04/18/34/cotton-2714788_640.jpg",
                 rating: 4.6,
                 reviews_count: 189,
                 specifications: { "Type": "Bt Cotton", "Staple Length": "28mm", "Lint %": "42-44%", "Disease Resistance": "Bollworm resistant" }
@@ -227,7 +227,7 @@ router.post('/seed', async (req, res) => {
                 final_price: 4140,
                 stock_quantity: 220,
                 unit: "kg",
-                image_url: "https://images.unsplash.com/photo-1585518419759-0a0b92e0f6df?w=400",
+                image_url: "https://cdn.pixabay.com/photo/2020/03/20/15/05/chickpeas-4950613_640.jpg",
                 rating: 4.5,
                 reviews_count: 98,
                 specifications: { "Variety": "JG-11", "Season": "Rabi", "Yield": "18-20 quintals/hectare", "Maturity": "100-105 days" }
@@ -242,7 +242,7 @@ router.post('/seed', async (req, res) => {
                 final_price: 3200,
                 stock_quantity: 150,
                 unit: "kg",
-                image_url: "https://images.unsplash.com/photo-1604213000221-bb2bfbe49aea?w=400",
+                image_url: "https://cdn.pixabay.com/photo/2016/07/15/19/47/lentils-1519858_640.jpg",
                 rating: 4.7,
                 reviews_count: 112,
                 specifications: { "Duration": "Long-duration", "Yield": "18-20 quintals/hectare", "Protein %": "22-24%", "Maturity": "250-260 days" }
@@ -257,7 +257,7 @@ router.post('/seed', async (req, res) => {
                 final_price: 2660,
                 stock_quantity: 280,
                 unit: "kg",
-                image_url: "https://images.unsplash.com/photo-1599599810694-b5ac4dd64fd0?w=400",
+                image_url: "https://cdn.pixabay.com/photo/2018/05/29/17/51/mung-beans-3439534_640.jpg",
                 rating: 4.4,
                 reviews_count: 75,
                 specifications: { "Duration": "Short (60-70 days)", "Season": "Kharif & Zaid", "Yield": "10-12 quintals/hectare" }
@@ -272,7 +272,7 @@ router.post('/seed', async (req, res) => {
                 final_price: 2992,
                 stock_quantity: 200,
                 unit: "kg",
-                image_url: "https://images.unsplash.com/photo-1574943320219-553eb213f72d?w=400",
+                image_url: "https://cdn.pixabay.com/photo/2016/07/19/07/43/soybean-1527511_640.jpg",
                 rating: 4.6,
                 reviews_count: 143,
                 specifications: { "Oil Content": "19-20%", "Protein": "40-42%", "Yield": "20-25 quintals/hectare" }
@@ -287,7 +287,7 @@ router.post('/seed', async (req, res) => {
                 final_price: 2340,
                 stock_quantity: 350,
                 unit: "kg",
-                image_url: "https://images.unsplash.com/photo-1551754655-cd27e38d2076?w=400",
+                image_url: "https://cdn.pixabay.com/photo/2017/08/11/14/16/corn-2631087_640.jpg",
                 rating: 4.5,
                 reviews_count: 201,
                 specifications: { "Hybrid": "DJ-1029", "Yield": "60-70 quintals/hectare", "Season": "Kharif", "Maturity": "100-110 days" }
@@ -304,7 +304,7 @@ router.post('/seed', async (req, res) => {
                 final_price: 1450,
                 stock_quantity: 500,
                 unit: "bag",
-                image_url: "https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=400",
+                image_url: "https://cdn.pixabay.com/photo/2016/09/21/04/46/barley-field-1684052_640.jpg",
                 rating: 4.7,
                 reviews_count: 312,
                 specifications: { "N:P:K": "18:46:0", "Form": "Granular", "Solubility": "High water soluble" }
@@ -319,7 +319,7 @@ router.post('/seed', async (req, res) => {
                 final_price: 850,
                 stock_quantity: 1000,
                 unit: "bag",
-                image_url: "https://images.unsplash.com/photo-1464226184884-fa280b87c399?w=400",
+                image_url: "https://cdn.pixabay.com/photo/2015/07/05/12/24/fertilizer-832485_640.jpg",
                 rating: 4.8,
                 reviews_count: 456,
                 specifications: { "Nitrogen %": "46%", "Form": "Prilled", "White crystalline solid": "Yes" }
@@ -334,7 +334,7 @@ router.post('/seed', async (req, res) => {
                 final_price: 1140,
                 stock_quantity: 600,
                 unit: "bag",
-                image_url: "https://images.unsplash.com/photo-1587848212624-21a3a8d0eeae?w=400",
+                image_url: "https://cdn.pixabay.com/photo/2020/06/08/20/58/rice-field-5276862_640.jpg",
                 rating: 4.6,
                 reviews_count: 234,
                 specifications: { "K2O %": "60%", "Solubility": "Excellent", "Use": "All crops" }
@@ -349,7 +349,7 @@ router.post('/seed', async (req, res) => {
                 final_price: 552,
                 stock_quantity: 400,
                 unit: "bag",
-                image_url: "https://images.unsplash.com/photo-1615671524827-c1fe3973b648?w=400",
+                image_url: "https://cdn.pixabay.com/photo/2017/09/07/08/54/money-2724241_640.jpg",
                 rating: 4.8,
                 reviews_count: 189,
                 specifications: { "Organic Carbon": "14-16%", "C:N Ratio": "10:1", "Beneficial Microbes": "Yes" }
@@ -364,7 +364,7 @@ router.post('/seed', async (req, res) => {
                 final_price: 1100,
                 stock_quantity: 450,
                 unit: "bag",
-                image_url: "https://images.unsplash.com/photo-1587848212624-21a3a8d0eeae?w=400",
+                image_url: "https://cdn.pixabay.com/photo/2016/01/19/18/03/grain-1150046_640.jpg",
                 rating: 4.5,
                 reviews_count: 156,
                 specifications: { "N %": "26%", "Ca %": "13%", "Free Acidity": "No" }
@@ -381,7 +381,7 @@ router.post('/seed', async (req, res) => {
                 final_price: 1242,
                 stock_quantity: 280,
                 unit: "liter",
-                image_url: "https://images.unsplash.com/photo-1530836369250-ef72a3f5cda8?w=400",
+                image_url: "https://cdn.pixabay.com/photo/2017/08/07/23/00/nature-2609647_640.jpg",
                 rating: 4.6,
                 reviews_count: 167,
                 specifications: { "Active Ingredient": "Cypermethrin 10%", "Target Pests": "Insects", "Dosage": "750ml per 500L water" }
@@ -396,7 +396,7 @@ router.post('/seed', async (req, res) => {
                 final_price: 405,
                 stock_quantity: 350,
                 unit: "kg",
-                image_url: "https://images.unsplash.com/photo-1592921870789-04563d55041c?w=400",
+                image_url: "https://cdn.pixabay.com/photo/2018/03/13/23/22/field-3224249_640.jpg",
                 rating: 4.7,
                 reviews_count: 198,
                 specifications: { "Active Ingredient": "Mancozeb 75%", "Type": "Wettable Powder", "Use": "Preventive fungicide" }
@@ -411,7 +411,7 @@ router.post('/seed', async (req, res) => {
                 final_price: 320,
                 stock_quantity: 500,
                 unit: "liter",
-                image_url: "https://images.unsplash.com/photo-1592419044706-39796d40f98c?w=400",
+                image_url: "https://cdn.pixabay.com/photo/2016/02/06/18/09/farm-1183342_640.jpg",
                 rating: 4.4,
                 reviews_count: 145,
                 specifications: { "Concentration": "41% SL", "Type": "Post-emergent", "Dosage": "1-1.5 L per hectare" }
@@ -426,7 +426,7 @@ router.post('/seed', async (req, res) => {
                 final_price: 266,
                 stock_quantity: 600,
                 unit: "liter",
-                image_url: "https://images.unsplash.com/photo-1587848212624-21a3a8d0eeae?w=400",
+                image_url: "https://cdn.pixabay.com/photo/2017/05/05/15/32/neem-2286968_640.jpg",
                 rating: 4.8,
                 reviews_count: 289,
                 specifications: { "Content": "100% Organic Neem", "Target": "Soft bodied insects", "Safety": "Eco-friendly" }
@@ -441,7 +441,7 @@ router.post('/seed', async (req, res) => {
                 final_price: 240,
                 stock_quantity: 700,
                 unit: "kg",
-                image_url: "https://images.unsplash.com/photo-1613066795537-821e78d17fa4?w=400",
+                image_url: "https://cdn.pixabay.com/photo/2016/11/08/05/18/hot-pepper-1807512_640.jpg",
                 rating: 4.5,
                 reviews_count: 123,
                 specifications: { "Purity": "80%", "Type": "Wettable Powder", "Action": "Contact fungicide/miticide" }
@@ -458,7 +458,7 @@ router.post('/seed', async (req, res) => {
                 final_price: 40500,
                 stock_quantity: 35,
                 unit: "set",
-                image_url: "https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=400",
+                image_url: "https://cdn.pixabay.com/photo/2016/06/18/13/03/irrigate-1464085_640.jpg",
                 rating: 4.8,
                 reviews_count: 267,
                 specifications: { "Coverage": "1 hectare", "Water Saving": "60%", "Dripper Spacing": "30-50cm" }
@@ -473,7 +473,7 @@ router.post('/seed', async (req, res) => {
                 final_price: 2816,
                 stock_quantity: 110,
                 unit: "piece",
-                image_url: "https://images.unsplash.com/photo-1581978731548-c64695cc6952?w=400",
+                image_url: "https://cdn.pixabay.com/photo/2020/04/24/13/28/vineyard-5087456_640.jpg",
                 rating: 4.6,
                 reviews_count: 145,
                 specifications: { "Capacity": "16L", "Battery": "Lithium-ion", "Runtime": "4-6 hours", "Pressure": "Variable" }
@@ -488,7 +488,7 @@ router.post('/seed', async (req, res) => {
                 final_price: 3325,
                 stock_quantity: 180,
                 unit: "piece",
-                image_url: "https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=400",
+                image_url: "https://cdn.pixabay.com/photo/2017/09/01/21/53/soil-2705742_640.jpg",
                 rating: 4.7,
                 reviews_count: 198,
                 specifications: { "Functions": "pH, Moisture, Light, Nitrogen", "Display": "LCD", "Auto Calibration": "Yes" }
@@ -503,7 +503,7 @@ router.post('/seed', async (req, res) => {
                 final_price: 34960,
                 stock_quantity: 28,
                 unit: "set",
-                image_url: "https://images.unsplash.com/photo-1509391366360-2e959784a276?w=400",
+                image_url: "https://cdn.pixabay.com/photo/2017/09/12/13/21/solar-panel-2742302_640.jpg",
                 rating: 4.8,
                 reviews_count: 212,
                 specifications: { "Power": "0.75 HP", "Solar Panel": "100W", "Type": "Submersible", "Warranty": "5 years" }
@@ -518,7 +518,7 @@ router.post('/seed', async (req, res) => {
                 final_price: 5850,
                 stock_quantity: 75,
                 unit: "piece",
-                image_url: "https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=400",
+                image_url: "https://cdn.pixabay.com/photo/2015/07/20/13/01/tractor-852846_640.jpg",
                 rating: 4.5,
                 reviews_count: 134,
                 specifications: { "Type": "Manual", "Row Spacing": "Adjustable", "Seed Uniformity": "Excellent" }
@@ -935,56 +935,56 @@ router.post('/leaf-disease', async (req, res) => {
         const { imageBase64 } = req.body;
 
         if (!imageBase64) {
-            return res.status(400).json({ 
-                success: false, 
-                error: 'No image provided. Please upload a leaf or crop image.' 
+            return res.status(400).json({
+                success: false,
+                error: 'No image provided. Please upload a leaf or crop image.'
             });
         }
 
         // Validate image is a valid data URL (base64)
         if (!imageBase64.includes('data:image/') || !imageBase64.includes('base64,')) {
-            return res.status(400).json({ 
-                success: false, 
-                error: 'Invalid image format. Please upload a valid JPG or PNG image.' 
+            return res.status(400).json({
+                success: false,
+                error: 'Invalid image format. Please upload a valid JPG or PNG image.'
             });
         }
 
         // Extract base64 data
         const base64Data = imageBase64.split('base64,')[1];
         if (!base64Data || base64Data.length < 100) {
-            return res.status(400).json({ 
-                success: false, 
-                error: 'Image is too small. Please upload a clearer leaf or crop image.' 
+            return res.status(400).json({
+                success: false,
+                error: 'Image is too small. Please upload a clearer leaf or crop image.'
             });
         }
 
         // Simple validation: check if image contains green pixels (leaf characteristic)
         // In production, use TensorFlow.js or Python ML model
         const buffer = Buffer.from(base64Data, 'base64');
-        
+
         // Check file size (images should be 5KB+ for real leaf images)
         if (buffer.length < 5000) {
-            return res.status(400).json({ 
-                success: false, 
-                error: 'This does not appear to be a leaf or crop image. Please upload a clear photo of a plant leaf or crop.' 
+            return res.status(400).json({
+                success: false,
+                error: 'This does not appear to be a leaf or crop image. Please upload a clear photo of a plant leaf or crop.'
             });
         }
 
         if (buffer.length > 10 * 1024 * 1024) { // 10MB max
-            return res.status(400).json({ 
-                success: false, 
-                error: 'Image is too large. Please upload an image under 10MB.' 
+            return res.status(400).json({
+                success: false,
+                error: 'Image is too large. Please upload an image under 10MB.'
             });
         }
 
         // Analyze image - check for typical leaf/crop patterns
         // This is a simplified check; in production use actual ML model
         const imageAnalysis = analyzeImageForGreen(buffer);
-        
+
         if (!imageAnalysis.isLeaf) {
-            return res.status(400).json({ 
-                success: false, 
-                error: 'This does not look like a leaf or crop image. Please upload a clear photo of a green plant leaf or crop affected by disease.' 
+            return res.status(400).json({
+                success: false,
+                error: 'This does not look like a leaf or crop image. Please upload a clear photo of a green plant leaf or crop affected by disease.'
             });
         }
 
@@ -1003,9 +1003,9 @@ router.post('/leaf-disease', async (req, res) => {
 
     } catch (error) {
         console.error('[Leaf Disease API Error]', error);
-        res.status(500).json({ 
-            success: false, 
-            error: 'Failed to analyze image. Please try again.' 
+        res.status(500).json({
+            success: false,
+            error: 'Failed to analyze image. Please try again.'
         });
     }
 });
@@ -1015,24 +1015,24 @@ function analyzeImageForGreen(buffer) {
     try {
         // Convert base64 buffer to analyze color patterns
         // JPEG/PNG analysis: look for green (healthy) vs brown/yellow (disease)
-        
+
         let greenPixels = 0;
         let brownPixels = 0;
         let yellowPixels = 0;
         let totalPixels = 0;
-        
+
         // Sample every Nth byte to avoid processing entire large image
         const sampleRate = Math.max(1, Math.floor(buffer.length / 10000));
-        
+
         for (let i = 0; i < buffer.length - 2; i += sampleRate) {
             // JPEG/PNG color byte patterns
             // Approximate RGB from sequential bytes
             const r = buffer[i];
             const g = buffer[i + 1] || 0;
             const b = buffer[i + 2] || 0;
-            
+
             totalPixels++;
-            
+
             // Green leaves: G > R and G > B (typical leaf color)
             if (g > r + 10 && g > b + 10) {
                 greenPixels++;
@@ -1046,10 +1046,10 @@ function analyzeImageForGreen(buffer) {
                 yellowPixels++;
             }
         }
-        
+
         const greenRatio = greenPixels / totalPixels;
         const diseaseRatio = (brownPixels + yellowPixels) / totalPixels;
-        
+
         // Return object with detailed analysis
         return {
             greenRatio: greenRatio,
@@ -1066,7 +1066,7 @@ function analyzeImageForGreen(buffer) {
 // Helper: Predict disease based on image analysis
 function predictLeafDisease(imageAnalysis) {
     const { greenRatio, diseaseRatio, hasDiseaseSpots } = imageAnalysis;
-    
+
     const diseases = [
         {
             name: "Early Blight",
@@ -1112,7 +1112,7 @@ function predictLeafDisease(imageAnalysis) {
     if (hasDiseaseSpots && diseaseRatio > 0.03) {
         // More disease spots = more confidence in disease prediction
         const diseaseConfidenceBoost = Math.min(diseaseRatio * 100, 20);
-        
+
         if (diseaseRatio > 0.15) {
             // Severe disease: Brown spots cover >15% of leaf
             selectedDisease = diseases[0]; // Early Blight
